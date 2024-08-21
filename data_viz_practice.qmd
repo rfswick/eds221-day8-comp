@@ -135,11 +135,103 @@ ggplot(data = lizards, aes(y = fct_infreq(common_name))) +
   facet_grid(sex ~ tail)
 ```
 
+# scale_x_continuous changes the scale of your x-axis, scale_y_continous changes the scale of your y-axis
+```{r}
+ggplot(data = lizards, aes(x = total_length, y = weight)) +
+  geom_point() +
+  scale_x_continuous(breaks = c(0, 250, 500),
+                     limits = c(0, 500)) +
+  scale_y_continuous(breaks = seq(from = 0, to = 70, by = 10),
+                    limits = c(0, 70)) +
+  theme_light()
+```
 
 
+# %Y gives you the full year (ex 1996), %y gives you the two digit year (ex 96), 
+# '%y gives you apostrophe two digit year (ex '96)
+# breaks_pretty tries to break the scale at a nice junction
+```{r}
+lizards_counts <- lizards |>
+  mutate(date = lubridate::mdy(date)) |>
+  count(date)
 
+ggplot(data = lizards_counts, aes(x = date, y = n)) +
+  geom_line() +
+  scale_x_date(breaks = scales::breaks_pretty())
+  scale_x_date(breaks = scales::breaks_width("3 years"),
+               labels = scales::label_date("%Y")) +
+  labs(x = "Date",
+       y = "Number of lizards (n)")
+```
 
+# scale_color_gradientn allows you to input a vector of colors into the graph
+# scale_color_gradient allows you to input a high and low color
+# scale_color_steps bins your colors into distinct colors instead of a full scale of color
+```{r}
+ggplot(data = lizards, aes(x = total_length, y = weight)) +
+  geom_point(aes(color = total_length)) +
+  scale_color_steps2 = (low = "green", mid = "white", high = "red", midpoint = 150, 
+                        breaks = c(50, 75, 150, 180, 220, 280))
+  scale_color_steps(low = "red", high = "black")
+  scale_colour_gradientn(colors = c("orange", "red", "purple", "navy", "black"))
+  scale_color_gradient(low = "red", high = "navy")
+```
 
+```{r}
+p <- ggplot(data = lizards, aes(x = total_length, y = weight)) +
+  geom_point()
+
+p +
+  theme(panel.grid.minor = element_blank(),
+        panel.grid.major = element_line(color = "red"),
+        plot.background = element_rect(fill = "pink"),
+        text = element_text(size = 12,
+                            family = "serif"),
+        axis.text.x = element_text(color = "blue"),
+        axis.text.y = element_text(color = "green"),
+        panel.background = element_rect(color = "purple",
+                                        fill = "yellow"))
+
+```
+
+```{r}
+p +
+  geom_hline(yintercept = mean(lizards$weight), color = "blue", linetype = "dashed") +
+  geom_vline(xintercept = 100, color = "red") +
+  annotate("text", x = 100, y = 50, label = "COOL!", color = "purple") +
+  annotate("text", x = 350, y = mean(lizards$weight) + 2, label = "Mean weight")
+```
+
+```{r}
+mono <- read_csv(here("data_tidy", "mono.csv"))
+
+ggplot(data = mono, aes(x = year, y = lake_level)) +
+  geom_rect(aes(xmin = 1941,
+                xmax = 1983,
+                ymin = 6350,
+                ymax = 6440),
+            fill = "gray90") +
+  geom_line() +
+  labs(x = "Year",
+       y = "Lake Surface Level\n(feet above sea level)\n",
+       title = "Mono Lake (1850 - 2017)",
+       caption = "Data: Mono Basin Clearinghouse") +
+  scale_y_continuous(limits = c(6350, 6440),
+                     breaks = c(6370, 6400, 6430),
+                     labels = scales::label_comma()) +
+  scale_x_continuous(limits = c(1850, 2020),
+                     breaks = seq(1850, 2010, by = 20),
+                     expand = c(0,0)) +
+  geom_hline(yintercept = 6360, linetype = "dashed") +
+  annotate("text", 
+           x = 1910, 
+           y = 6364,
+           label = "Decreased shrimp abundance expected\n(6,360 feet above sea level)\n") +
+  annotate("text", x = 1962, y = 6425,
+           label = "unrestricted diversions\n(1941 - 1983)\n",
+           size = 3) +
+  theme_minimal()
+```
 
 
 
