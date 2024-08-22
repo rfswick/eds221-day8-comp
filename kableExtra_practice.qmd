@@ -1,0 +1,23 @@
+---
+title: "Table Examples"
+author: "Rachel Swick"
+format: html
+---
+
+```{r}
+rm(list = ls())
+library(tidyverse)
+library(kableExtra)
+library(palmerpenguins)
+```
+
+```{r}
+penguins |>
+  group_by(species, island) |>
+  summarize(mean_mass = mean(body_mass_g, na.rm = TRUE)) |>
+  kable(col.names = c("Species", "Island", "Body mass (g)")) |>
+  kable_styling(bootstrap_options = "striped", full_width = FALSE)
+
+# look at kableExtra documentation to see all of things you can do to your tables
+```
+
